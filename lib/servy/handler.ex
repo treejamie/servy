@@ -9,13 +9,14 @@ defmodule Servy.Handler do
 
 
   def parse(_request) do
-    # TODO: Parse the request string into a map:
+    # get the method and path
     [method, path, _] =
       request
       |> String.split("\n")
       |> List.first
       |> String.split(" ")
 
+    # la fin
     %{ method: method, path: path, resp_body: "" }
   end
 
