@@ -49,6 +49,14 @@ defmodule Servy.Handler do
     %{ conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
   end
 
+  def route(%{method: "GET", path: "/about"} = conv) do
+    # get the file
+    Path.expand("../../pages", __DIR__)
+    |> Path.join("about.html")
+    |> File.read
+    |> handle_file(conv)
+  end
+
   def route(%{method: "GET", path: "/bears/" <> id} = conv) do
     %{ conv | status: 200, resp_body: "Bear #{id}"}
   end
@@ -56,6 +64,19 @@ defmodule Servy.Handler do
   def route(%{path: path} = conv) do
     %{ conv | resp_body: "No #{path} here.", status: 404}
   end
+
+  def handle_file({:ok, content}, conv) do
+    %{ conv | status: 200,  resp_body: content}
+  end
+
+  def handle_file({:error, :enoent}, conv) do
+    %{ conv | status: 500, resp_body: "File error: does not exist"}
+  end
+
+  def handle_file({:error, reason}, conv) do
+    %{ conv | status: 500, resp_body: "File error: #{reason}"}
+  end
+
 
   def format_response(conv) do
     """
@@ -113,6 +134,17 @@ IO.puts response
 
 request = """
 GET /wildlife HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+response = Servy.Handler.handle(request)
+IO.puts response
+
+
+request = """
+GET /about HTTP/1.1
 Host: example.com
 User-Agent: ExampleBrowser/1.0
 Accept: */*
