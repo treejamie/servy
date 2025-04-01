@@ -1,6 +1,7 @@
 defmodule Servy.Handler do
 
   alias Servy.Conv
+  alias Servy.BearController
 
   @moduledoc """
   Servy!
@@ -26,9 +27,6 @@ defmodule Servy.Handler do
     %{ conv | status: 200, resp_body: "Bears, Lions, Tigers"}
   end
 
-  def route(%Conv{method: "GET", path: "/bears"} = conv) do
-    %{ conv | status: 200, resp_body: "Teddy, Smokey, Paddington"}
-  end
 
   def route(%Conv{method: "GET", path: "/about"} = conv) do
     # get the file
@@ -38,12 +36,17 @@ defmodule Servy.Handler do
     |> handle_file(conv)
   end
 
+  def route(%Conv{method: "GET", path: "/bears"} = conv) do
+    BearController.index(conv)
+  end
+
   def route(%Conv{method: "GET", path: "/bears/" <> id} = conv) do
-    %{ conv | status: 200, resp_body: "Bear #{id}"}
+    params = Map.put(conv.params, "id", id)
+    BearController.show(conv, params)
   end
 
   def route(%Conv{method: "POST", path: "/bears"} = conv) do
-    %{ conv | status: 201, resp_body: "Created a #{conv.params["type"]} bear named #{conv.params["name"]}" }
+    BearController.create(conv, conv.params)
   end
 
   def route(%Conv{path: path} = conv) do
@@ -73,16 +76,6 @@ defmodule Servy.Handler do
     """
   end
 
-  defp status_reason(code) do
-    %{
-      200 => "OK",
-      201 => "Created",
-      401 => "Unauthorized",
-      403 => "Forbidden",
-      404 => "Not Found",
-      500 => "Internal Server Error"
-    }[code]
-  end
 end
 
 
@@ -96,16 +89,6 @@ Accept: */*
 response = Servy.Handler.handle(request)
 IO.puts response
 
-
-request = """
-GET /bears/1 HTTP/1.1
-Host: example.com
-User-Agent: ExampleBrowser/1.0
-Accept: */*
-
-"""
-response = Servy.Handler.handle(request)
-IO.puts response
 
 request = """
 GET /bigfoot HTTP/1.1
@@ -153,4 +136,26 @@ name=Baloo&type=Brown
 
 response = Servy.Handler.handle(request)
 
+IO.puts response
+
+
+request = """
+GET /bears HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+response = Servy.Handler.handle(request)
+IO.puts response
+
+
+request = """
+GET /bears/1 HTTP/1.1
+Host: example.com
+User-Agent: ExampleBrowser/1.0
+Accept: */*
+
+"""
+response = Servy.Handler.handle(request)
 IO.puts response
