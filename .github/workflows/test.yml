@@ -4,11 +4,10 @@ on:
   push:
     branches-ignore:
       - main
+
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-    defaults:
-      run:
     name: OTP ${{ matrix.otp }} | Elixir ${{ matrix.elixir }} | OS ${{ matrix.os }}
     strategy:
       matrix:
@@ -16,22 +15,19 @@ jobs:
         otp: [27.x]
         elixir: [1.18.3]
     steps:
-        - uses: actions/checkout@v1.0.0
+      - uses: actions/checkout@v3
 
-        - uses: erlef/setup-beam@v1
-          with:
-            otp-version: ${{ matrix.otp }}
-            elixir-version: ${{ matrix.elixir }}
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ matrix.otp }}
+          elixir-version: ${{ matrix.elixir }}
 
-        - name: Install dependencies
-          run: |
-            mix local.rebar --force
-            mix local.hex --force
-            mix deps.get
+      - name: Install dependencies
+        run: |
+          mix local.rebar --force
+          mix local.hex --force
+          mix deps.get
 
-        - name: Run tests
-          run: |
-            mix compile --force --warnings-as-errors
-            mix test --cover
-          env:
-            MIX_ENV: test
+      - name: Run tests
+        run: |
+          mix compile --force --
