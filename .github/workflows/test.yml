@@ -31,3 +31,4 @@ jobs:
       - name: Run tests
         run: |
           mix compile --force --
+          mix test
