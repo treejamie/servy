@@ -10,6 +10,8 @@ defmodule Servy.BearController do
       @templates_path
       |> Path.join(template)
       |> EEx.eval_file(bindings)
+
+  %{conv | status: 200, resp_body: content}
   end
 
   def index(conv) do

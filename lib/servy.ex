@@ -8,8 +8,8 @@ defmodule Servy do
 
   ## Examples
 
-      iex> Servy.hello()
-      :world
+      iex> Servy.hello("Bob")
+      "Alreet, Bob"
 
   """
   def hello(name) do
