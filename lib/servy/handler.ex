@@ -13,7 +13,6 @@ defmodule Servy.Handler do
   import Servy.Plugins, only: [rewrite_path: 1, log: 1, track: 1]
   import Servy.Parser, only: [parse: 1]
 
-  @spec handle(binary()) :: <<_::64, _::_*8>>
   @doc "transforms request into a response"
   def handle(request) do
     request
