@@ -24,26 +24,26 @@ defmodule Servy.Handler do
     |> format_response
   end
 
-  def route(%Conv{ method: "GET", path: "/snapshots" } = conv) do
+  def route(%Conv{ method: "GET", path: "/sensors" } = conv) do
 
      # the request handling process
     parent = self()
 
+
+    task = Task.async(fn -> Servy.Tracker.get_location("bigfoot") end)
+
     # spawn the processes
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-1")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-2")}) end)
-    spawn(fn -> send(parent, {:result, VideoCam.get_snapshot("cam-3")}) end)
+    snapshots =
+      ["cam-1", "cam-2", "cam-3"]
+      |> Enum.map(&Task.async(fn -> VideoCam.get_snapshot(&1) end))
+      |> Enum.map(&Task.await/1)
+
 
     # receive the messages - very naive, single,  pattern match
-    snapshot1 = receive do {:result, filename} -> filename end
-    snapshot2 = receive do {:result, filename} -> filename end
-    snapshot3 = receive do {:result, filename} -> filename end
+    where_is_bigfoot = Task.await(task)
 
-    # and now store them
-    snapshots = [snapshot1, snapshot2, snapshot3]
-
-
-    %{ conv | status: 200, resp_body: inspect snapshots }
+    # now the response
+    %{ conv | status: 200, resp_body: inspect {snapshots, where_is_bigfoot} }
   end
 
 
