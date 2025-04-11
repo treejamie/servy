@@ -7,13 +7,13 @@ This codebase is the result of following along with the pragmatic studio course 
 
 The copyright to the code is owned by Pragamatic Studio.
 
-This code was copied by me, following along with the video tutorials. In copyright terms it is considered to be a derivate work. I make no assertion on copyright and I've made my derivate work public to demonstrate that I've completed the course.
+Whilst I technically typed the code, I did so following along with the video tutorials. In copyright terms it is considered to be a derivate work. I make no assertion on the copyright and I've made my derivate work public to demonstrate that I've completed the course.
 
 If there are any issues with this being public drop me an email [me@treejamie.com][0] and I'll promptly make it private.
 
 ## License
 
-From the course
+From the course:
 
 > All course material, including videos and source code, is copyrighted and licensed for individual use only. You may make copies for your own personal use (e.g. on your laptop, on your iPad, on your backup drive). However, you may not transfer ownership or share the material with other people. We make no guarantees that the source code is fit for any purpose. Course material may not be used to create training material, courses, books, and the like. Please support us by encouraging others to [purchase their own copies][0]. Thank you!
 >

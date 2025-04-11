@@ -1,5 +1,19 @@
 defmodule Servy.PledgeServer do
 
+  # this is used to register the process
+  @name :pledge_server
+
+  def start do
+    IO.puts "starting the pledge server..."
+    # start it
+    pid = spawn(__MODULE__, :listen_loop, [[]])
+
+    # register the process
+    Process.register(pid, @name)
+
+    # just incase
+    pid
+  end
 
   def listen_loop(state) do
 
@@ -28,17 +42,17 @@ defmodule Servy.PledgeServer do
     end
   end
 
-  def create_pledge(pid, name, amount) do
+  def create_pledge(name, amount) do
     # send the pledge
-    send(pid, {self(), :create_pledge, name, amount})
+    send(@name, {self(), :create_pledge, name, amount})
 
     # and receive it - this blocks
     receive do {:response, status} -> status end
   end
 
-  def recent_pledges(pid) do
+  def recent_pledges() do
     # send the message - async
-    send(pid, {self(), :recent_pledges})
+    send(@name, {self(), :recent_pledges})
 
     # and receive it - this blocks
     receive do {:response, pledges} -> pledges end
@@ -54,17 +68,14 @@ defmodule Servy.PledgeServer do
 end
 
 
-alias Servy.PledgeServer
+# alias Servy.PledgeServer
 
-pid = spawn(PledgeServer, :listen_loop, [[]])
+# PledgeServer.start()
 
-IO.inspect PledgeServer.create_pledge(pid, "larry", 10)
-IO.inspect PledgeServer.create_pledge(pid, "moe", 20)
-IO.inspect PledgeServer.create_pledge(pid, "curly", 30)
-IO.inspect PledgeServer.create_pledge(pid, "daisy", 40)
-IO.inspect PledgeServer.create_pledge(pid, "grace", 50)
+# IO.inspect PledgeServer.create_pledge("larry", 10)
+# IO.inspect PledgeServer.create_pledge("moe", 20)
+# IO.inspect PledgeServer.create_pledge("curly", 30)
+# IO.inspect PledgeServer.create_pledge("daisy", 40)
+# IO.inspect PledgeServer.create_pledge("grace", 50)
 
-IO.inspect PledgeServer.recent_pledges(pid)
-
-
-receive do {:response, pledges} -> IO.inspect pledges end
+# IO.inspect PledgeServer.recent_pledges()
