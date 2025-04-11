@@ -8,8 +8,10 @@ defmodule Servy.PledgeServer do
       {:create_pledge, name, amount} ->
         {:ok, id} = send_pledge_to_service(name, amount)
 
+        most_recent_pledges = Enum.take(state, 2)
+
         # make the new state
-        new_state = [ {name, amount} | state]
+        new_state = [ {name, amount} | most_recent_pledges]
         IO.puts "#{name} pledged #{amount}"
         IO.puts "new state is #{inspect new_state}"
 
@@ -22,17 +24,17 @@ defmodule Servy.PledgeServer do
     end
   end
 
-  # def create_pledge(name, amount) do
-  #   {:ok, id} = send_pledge_to_service(name, amount)
+  def create_pledge(pid, name, amount) do
+    send(pid, {:create_pledge, name, amount})
+  end
 
-  #   # catche the pledge
-  #   [{"larry", 10}]
-  # end
+  def recent_pledges(pid) do
+    # send the message - async
+    send(pid, {self(), :recent_pledges})
 
-  # def recent_pledges do
-  #  # returns the most recent, pledges
-  #   [{"larry", 10}]
-  # end
+    # and receive it - this blocks
+    receive do {:response, pledges} -> pledges end
+  end
 
   defp send_pledge_to_service(_name, _amount) do
 
@@ -42,3 +44,19 @@ defmodule Servy.PledgeServer do
   end
 
 end
+
+
+alias Servy.PledgeServer
+
+pid = spawn(PledgeServer, :listen_loop, [[]])
+
+PledgeServer.create_pledge(pid, "larry", 10)
+PledgeServer.create_pledge(pid, "moe", 20)
+PledgeServer.create_pledge(pid, "curly", 30)
+PledgeServer.create_pledge(pid, "daisy", 40)
+PledgeServer.create_pledge(pid, "grace", 50)
+
+IO.inspect PledgeServer.recent_pledges(pid)
+
+
+receive do {:response, pledges} -> IO.inspect pledges end

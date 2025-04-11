@@ -8,8 +8,8 @@ defmodule Servy.PledgeController do
 
   def index(conv) do
     # Gets the recent pledges from the cache
-    #Servy.PledgeServer.pledges = recent_pledges()
+    Servy.PledgeServer.pledges = recent_pledges()
 
-    #%{ conv | status: 200, resp_body: (inspect pledges) }
+    %{ conv | status: 200, resp_body: (inspect pledges) }
   end
 end
